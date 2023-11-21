@@ -1,0 +1,29 @@
+---
+- name: Stop and Destroy LXC Containers
+  hosts: all
+  gather_facts: no
+  vars_prompt:
+    - name: "container_fragment"
+      prompt: "Enter the name fragment to match containers"
+      private: no
+
+  tasks:
+    - name: Find LXC Containers Matching the Name Fragment
+      shell: "lxc-ls -1 | grep {{ container_fragment }}"
+      register: matching_containers
+      ignore_errors: yes
+
+    - name: Stop Matching LXC Containers
+      shell: "lxc-stop -n {{ item }}"
+      loop: "{{ matching_containers.stdout_lines }}"
+      when: matching_containers.stdout != ""
+      ignore_errors: yes
+
+    - name: Destroy Matching LXC Containers
+      shell: "lxc-destroy -n {{ item }}"
+      loop: "{{ matching_containers.stdout_lines }}"
+      when: matching_containers.stdout != ""
+      ignore_errors: yes
+
+    - name: Remove Container Config Directory
+      ansible.builtin.command: rm -rf /openstack/{{ matching_containers.stdout_lines }}
