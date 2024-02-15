@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+
+
+# 41-custom-storage-layout - set layout for system
+
+
+# --- Start MAAS 1.0 script metadata ---
+# name: 41-custom-storage-layout
+# title: Set layout for system
+# description: Set layout for system
+# script_type: commissioning
+# timeout: 60
+# --- End MAAS 1.0 script metadata ---
+
+import json
+import os
+import sys
+
+# Function definitions
+def read_json_file(path):
+    try:
+        with open(path) as fd:
+            return json.load(fd)
+    except OSError as e:
+        sys.exit(f"Failed to read {path}: {e}")
+    except json.JSONDecodeError as e:
+        sys.exit(f"Failed to parse {path}: {e}")
+
+# Load the hardware from the json in the MAAS_RESOURCES_FILE
+#hardware = read_json_file(os.environ['MAAS_RESOURCES_FILE'])
+
+
+cfg = '''{
+  "layout": {
+    "sda": {
+      "type": "disk",
+      "ptable": "gpt",
+      "boot": true,
+      "partitions": [
+        { "name": "sda1", "fs": "vfat", "size": "1G", "bootable": true },
+        { "name": "sda2", "fs": "ext4", "size": "100G" },
+        { "name": "sda3", "fs": "swap", "size": "256G" }
+      ]
+    },
+    "nvme0n1": {
+      "type": "disk",
+      "ptable": "gpt",
+      "partitions": [
+        { "name": "nvme0n1p1", "fs": "ext4", "size": "100G" }
+      ]
+    },
+    "mounts": {
+        "/": { "device": "sda2" },
+        "/boot/efi": { "device": "sda1" },
+        "/swap": { "device": "sda3" },
+        "/SCRATCH": { "device": "nvme0n1p1" }
+        
+  }
+}'''
+
+# Load layoutDetail from the above structure
+layoutDetail = json.loads(cfg)
+
+# Output
+#hardware["storage-extra"] = layoutDetail
+
+#print('Saving custom storage layout to ' + os.environ['MAAS_RESOURCES_FILE'])
+#print(json.dumps(hardware))
+
+#with open(os.environ['MAAS_RESOURCES_FILE'], 'w') as fd:
+#    json.dump(hardware, fd)
