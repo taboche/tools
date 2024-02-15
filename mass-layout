@@ -69,3 +69,18 @@ layoutDetail = json.loads(cfg)
 
 #with open(os.environ['MAAS_RESOURCES_FILE'], 'w') as fd:
 #    json.dump(hardware, fd)
+
+
+
+
+
+Traceback (most recent call last):
+  File "/tmp/user_data.sh.tRDlPD/scripts/commissioning/41-custom-storage-layout", line 62, in <module>
+    layoutDetail = json.loads(cfg)
+  File "/usr/lib/python3.8/json/__init__.py", line 357, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.8/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.8/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 27 column 2 (char 674)
