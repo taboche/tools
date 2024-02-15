@@ -84,3 +84,17 @@ Traceback (most recent call last):
   File "/usr/lib/python3.8/json/decoder.py", line 353, in raw_decode
     obj, end = self.scan_once(s, idx)
 json.decoder.JSONDecodeError: Expecting ',' delimiter: line 27 column 2 (char 674)
+
+
+{'layout': {'sda': {'type': 'disk', 'ptable': 'gpt', 'boot': True, 'partitions': [{'name': 'sda1', 'fs': 'vfat', 'size': '1G', 'bootable': True}, {'name': 'sda2', 'fs': 'ext4', 'size': '100G'}, {'name': 'sda3', 'fs': 'swap', 'size': '256G'}]}, 'nvme0n1': {'type': 'disk', 'ptable': 'gpt', 'partitions': [{'name': 'nvme0n1p1', 'fs': 'ext4', 'size': '100G'}]}, 'mounts': {'/': {'device': 'sda2', 'options': 'noatime'}, '/boot/efi': {'device': 'sda1'}, '/swap': {'device': 'sda3'}, '/SCRATCH': {'device': 'nvme0n1p1'}}}}
+Saving custom storage layout to /storage-config.json
+Traceback (most recent call last):
+  File "/tmp/user_data.sh.U1P86q/scripts/commissioning/41-custom-storage-layout", line 73, in <module>
+    os.environ["MAAS_STORAGE_CONFIG_FILE"] = layoutDetail
+  File "/usr/lib/python3.8/os.py", line 680, in __setitem__
+    value = self.encodevalue(value)
+  File "/usr/lib/python3.8/os.py", line 750, in encode
+    raise TypeError("str expected, not %s" % type(value).__name__)
+TypeError: str expected, not dict
+
+
