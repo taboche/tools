@@ -293,3 +293,24 @@ print("Root Disk:", root_disk)
 print("Root Disk Size (GB):", root_disk_size_gb)
 print("Scratch Disk:", scratch_disk)
 print("Scratch Disk Size (GB):", scratch_disk_size_gb)
+
+
+# Sort storage disks by size
+sorted_disks = sorted(storage_disks, key=lambda disk: disk['size'], reverse=True)
+
+# Assign variables
+large_disk = sorted_disks[0]['id']
+small_disk = sorted_disks[1]['id']
+root_disk = large_disk
+scratch_disk = small_disk
+
+# Get size of disks in GB
+large_disk_size_gb = sorted_disks[0]['size'] / (1024**3)
+small_disk_size_gb = sorted_disks[1]['size'] / (1024**3)
+
+print("Large Disk:", large_disk)
+print("Small Disk:", small_disk)
+print("Root Disk:", root_disk)
+print("Scratch Disk:", scratch_disk)
+print("Size of Large Disk (GB):", large_disk_size_gb)
+print("Size of Small Disk (GB):", small_disk_size_gb)
