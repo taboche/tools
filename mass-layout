@@ -127,3 +127,28 @@ TypeError: str expected, not dict
 }
 
 
+
+
+
+import os
+
+def export_hw_resources_to_env():
+    json_file_path = "hw_resources.json"
+    env_variable_name = "MAAS_CUSTOM_RESOURCES"
+    
+    try:
+        # Read the content of hw_resources.json
+        with open(json_file_path, "r") as file:
+            json_content = file.read()
+
+        # Set the environment variable with the content of the JSON file
+        os.environ[env_variable_name] = json_content
+
+        print(f"Exported content of '{json_file_path}' to environment variable '{env_variable_name}'")
+
+    except FileNotFoundError:
+        print(f"Error: File '{json_file_path}' not found.")
+
+# Call the function to export the JSON content to the environment variable
+export_hw_resources_to_env()
+
