@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import sys
+
+
+def read_json_file(path):
+    try:
+        with open(path) as fd:
+            return json.load(fd)
+    except OSError as e:
+        sys.exit(f"Failed to read {path}: {e}")
+    except json.JSONDecodeError as e:
+        sys.exit(f"Failed to parse {path}: {e}")
+
+
+hardware = read_json_file(os.environ['MAAS_RESOURCES_FILE'])
+
+cfg = {
+    'layout': {}
+}
+
+disks = hardware['resources']['storage']['disks']
+
+# Sort disks by size (ascending)
+disks.sort(key=lambda disk: disk['size'])
+
+# Smaller disk for boot
+smaller_disk = disks[0]
+larger_disk = disks[1]
+
+# Add partition to smaller disk (SATA/NVMe doesn't matter)
+suffix = ''
+if smaller_disk['id'][-1:] in '0123456789':
+    suffix = 'p'
+
+cfg['layout'][smaller_disk['id']] = {
+    'type': 'disk',
+    'ptable': 'gpt',
+    'partitions': [
+        {
+            'name': smaller_disk['id'] + suffix + '1',
+            'size': '128M',
+            'fs': 'vfat',
+            'bootable': True
+        }
+    ]
+}
+
+# Mount larger disk on /SCRATCH
+suffix = ''
+if larger_disk['id'][-1:] in '0123456789':
+    suffix = 'p'
+
+cfg['mounts'] = {
+    '/': {
+        'device': smaller_disk['id'] + suffix + '1',  # Use boot partition for root
+        'options': 'defaults,noatime'
+    },
+    '/SCRATCH': {
+        'device': larger_disk['id'] + suffix
+    }
+}
+
+print('writing custom storage layout to ' + os.environ['MAAS_RESOURCES_FILE'])
+print(json.dumps(cfg, sort_keys=True, indent=2))
+out = open(os.environ['MAAS_RESOURCES_FILE'], 'w')
+out.write(json.dumps(cfg, sort_keys=True, indent=2))
+out.close()
+
