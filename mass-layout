@@ -98,3 +98,32 @@ Traceback (most recent call last):
 TypeError: str expected, not dict
 
 
+{
+  "layout": {
+    "sda": {
+      "type": "disk",
+      "ptable": "gpt",
+      "boot": true,
+      "partitions": [
+        { "name": "sda1", "fs": "vfat", "size": "1G", "bootable": true },
+        { "name": "sda2", "fs": "ext4", "size": "100G" },
+        { "name": "sda3", "fs": "swap", "size": "256G" }
+      ]
+    },
+    "nvme0n1": {
+      "type": "disk",
+      "ptable": "gpt",
+      "partitions": [
+        { "name": "nvme0n1p1", "fs": "ext4", "size": "100G" }
+      ]
+    }
+  },
+  "mounts": {
+    "/": { "device": "sda2" },
+    "/boot/efi": { "device": "sda1" },
+    "/swap": { "device": "sda3" },
+    "/SCRATCH": { "device": "nvme0n1p1" }
+  }
+}
+
+
