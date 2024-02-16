@@ -152,3 +152,7 @@ def export_hw_resources_to_env():
 # Call the function to export the JSON content to the environment variable
 export_hw_resources_to_env()
 
+
+[{'id': 'nvme0n1', 'device': '259:0', 'model': 'KCD6XLUL7T68', 'type': 'nvme', 'read_only': False, 'size': 7681501126656, 'removable': False, 'wwn': 'eui.00000000000000008ce38ee2073c7201', 'numa_node': 0, 'device_path': 'pci-0000:61:00.0-nvme-1', 'block_size': 4096, 'firmware_version': '0105', 'rpm': 0, 'serial': '7180A011T5Q8', 'device_id': 'nvme-eui.00000000000000008ce38ee2073c7201', 'partitions': [{'id': 'nvme0n1p1', 'device': '259:1', 'read_only': False, 'size': 7681499725824, 'partition': 1}]}, {'id': 'sda', 'device': '8:0', 'model': 'INTEL SSDSC2KB48', 'type': 'scsi', 'read_only': False, 'size': 480103981056, 'removable': True, 'numa_node': 0, 'device_path': 'pci-0000:47:00.0-ata-2', 'block_size': 4096, 'firmware_version': '0132', 'rpm': 0, 'serial': 'BTYF106500ZX480BGN', 'device_id': 'wwn-0x55cd2e41542b9da5', 'partitions': [{'id': 'sda1', 'device': '8:1', 'read_only': False, 'size': 536870912, 'partition': 1}, {'id': 'sda2', 'device': '8:2', 'read_only': False, 'size': 479565185024, 'partition': 2}]}]
+
+
