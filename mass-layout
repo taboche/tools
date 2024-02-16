@@ -314,3 +314,55 @@ print("Root Disk:", root_disk)
 print("Scratch Disk:", scratch_disk)
 print("Size of Large Disk (GB):", large_disk_size_gb)
 print("Size of Small Disk (GB):", small_disk_size_gb)
+
+
+
+
+import os
+import json
+
+def generate_maas_storage_config(root_disk, scratch_disk):
+    layout = {
+        root_disk: {
+            "type": "disk",
+            "ptable": "gpt",
+            "boot": True,
+            "partitions": [
+                {"name": f"{root_disk}1", "fs": "vfat", "size": "1G", "bootable": True},
+                {"name": f"{root_disk}2", "fs": "ext4", "size": "100G"},
+                {"name": f"{root_disk}3", "fs": "swap", "size": "256G"}
+            ]
+        },
+        scratch_disk: {
+            "type": "disk",
+            "ptable": "gpt",
+            "partitions": [
+                {"name": f"{scratch_disk}p1", "fs": "ext4", "size": "100G"}
+            ]
+        }
+    }
+
+    mounts = {
+        "/": {"device": f"{root_disk}2"},
+        "/boot/efi": {"device": f"{root_disk}1"},
+        "/swap": {"device": f"{root_disk}3"},
+        "/SCRATCH": {"device": f"{scratch_disk}p1"}
+    }
+
+    maas_storage_config = {"layout": layout, "mounts": mounts}
+
+    return maas_storage_config
+
+root_disk = "sdX"  # Change to your actual root disk name
+scratch_disk = "nvmeXn1"  # Change to your actual scratch disk name
+
+# Check if the conditions are met
+if "sd" in root_disk and "nvme" in scratch_disk:
+    maas_storage_config = generate_maas_storage_config(root_disk, scratch_disk)
+
+    # Set the MAAS_STORAGE_CONFIG_FILE environment variable
+    os.environ["MAAS_STORAGE_CONFIG_FILE"] = json.dumps(maas_storage_config)
+
+    print("MAAS_STORAGE_CONFIG_FILE has been set.")
+else:
+    print("Conditions not met. MAAS_STORAGE_CONFIG_FILE not set.")
