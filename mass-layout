@@ -156,3 +156,74 @@ export_hw_resources_to_env()
 [{'id': 'nvme0n1', 'device': '259:0', 'model': 'KCD6XLUL7T68', 'type': 'nvme', 'read_only': False, 'size': 7681501126656, 'removable': False, 'wwn': 'eui.00000000000000008ce38ee2073c7201', 'numa_node': 0, 'device_path': 'pci-0000:61:00.0-nvme-1', 'block_size': 4096, 'firmware_version': '0105', 'rpm': 0, 'serial': '7180A011T5Q8', 'device_id': 'nvme-eui.00000000000000008ce38ee2073c7201', 'partitions': [{'id': 'nvme0n1p1', 'device': '259:1', 'read_only': False, 'size': 7681499725824, 'partition': 1}]}, {'id': 'sda', 'device': '8:0', 'model': 'INTEL SSDSC2KB48', 'type': 'scsi', 'read_only': False, 'size': 480103981056, 'removable': True, 'numa_node': 0, 'device_path': 'pci-0000:47:00.0-ata-2', 'block_size': 4096, 'firmware_version': '0132', 'rpm': 0, 'serial': 'BTYF106500ZX480BGN', 'device_id': 'wwn-0x55cd2e41542b9da5', 'partitions': [{'id': 'sda1', 'device': '8:1', 'read_only': False, 'size': 536870912, 'partition': 1}, {'id': 'sda2', 'device': '8:2', 'read_only': False, 'size': 479565185024, 'partition': 2}]}]
 
 
+# Given JSON data
+storage_devices = [
+    {
+        'id': 'nvme0n1',
+        'device': '259:0',
+        'model': 'KCD6XLUL7T68',
+        'type': 'nvme',
+        'read_only': False,
+        'size': 7681501126656,
+        'removable': False,
+        'wwn': 'eui.00000000000000008ce38ee2073c7201',
+        'numa_node': 0,
+        'device_path': 'pci-0000:61:00.0-nvme-1',
+        'block_size': 4096,
+        'firmware_version': '0105',
+        'rpm': 0,
+        'serial': '7180A011T5Q8',
+        'device_id': 'nvme-eui.00000000000000008ce38ee2073c7201',
+        'partitions': [
+            {'id': 'nvme0n1p1', 'device': '259:1', 'read_only': False, 'size': 7681499725824, 'partition': 1}
+        ]
+    },
+    {
+        'id': 'sda',
+        'device': '8:0',
+        'model': 'INTEL SSDSC2KB48',
+        'type': 'scsi',
+        'read_only': False,
+        'size': 480103981056,
+        'removable': True,
+        'numa_node': 0,
+        'device_path': 'pci-0000:47:00.0-ata-2',
+        'block_size': 4096,
+        'firmware_version': '0132',
+        'rpm': 0,
+        'serial': 'BTYF106500ZX480BGN',
+        'device_id': 'wwn-0x55cd2e41542b9da5',
+        'partitions': [
+            {'id': 'sda1', 'device': '8:1', 'read_only': False, 'size': 536870912, 'partition': 1},
+            {'id': 'sda2', 'device': '8:2', 'read_only': False, 'size': 479565185024, 'partition': 2}
+        ]
+    }
+]
+
+# Function to convert bytes to gigabytes
+def bytes_to_gigabytes(size_in_bytes):
+    return size_in_bytes / (1024 * 1024 * 1024)
+
+# Initialize root_disk and scratch_disk
+root_disk = None
+scratch_disk = None
+
+# Iterate over each device
+for device in storage_devices:
+    # Convert size to gigabytes
+    device_size_gb = bytes_to_gigabytes(device['size'])
+    
+    # Check if root_disk is None or if the current device is smaller than root_disk
+    if root_disk is None or device_size_gb < root_disk['size']:
+        root_disk = {'device_id': device['device_id'], 'size': device_size_gb}
+    else:
+        # Assign scratch_disk if root_disk is already assigned
+        scratch_disk = {'device_id': device['device_id'], 'size': device_size_gb}
+
+# Assign root_disk_size and scratch_disk_size
+root_disk_size = root_disk['size']
+scratch_disk_size = scratch_disk['size']
+
+# Output
+print(f"Root Disk: {root_disk['device_id']} ({root_disk_size:.2f} GB)")
+print(f"Scratch Disk: {scratch_disk['device_id']} ({scratch_disk_size:.2f} GB)")
