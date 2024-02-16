@@ -366,3 +366,33 @@ if "sd" in root_disk and "nvme" in scratch_disk:
     print("MAAS_STORAGE_CONFIG_FILE has been set.")
 else:
     print("Conditions not met. MAAS_STORAGE_CONFIG_FILE not set.")
+
+
+{
+  "layout": {
+    "{{ root_disk }}": {
+      "type": "disk",
+      "ptable": "gpt",
+      "boot": true,
+      "partitions": [
+        { "name": "{{ root_disk }}1{{ 'p' if root_disk[-1].isdigit() else '' }}", "fs": "vfat", "size": "1G", "bootable": true },
+        { "name": "{{ root_disk }}2{{ 'p' if root_disk[-1].isdigit() else '' }}", "fs": "ext4", "size": "100G" },
+        { "name": "{{ root_disk }}3{{ 'p' if root_disk[-1].isdigit() else '' }}", "fs": "swap", "size": "256G" }
+      ]
+    },
+    "{{ scratch_disk }}": {
+      "type": "disk",
+      "ptable": "gpt",
+      "partitions": [
+        { "name": "{{ scratch_disk }}p1{{ 'p' if scratch_disk[-1].isdigit() else '' }}", "fs": "ext4", "size": "100G" }
+      ]
+    }
+  },
+  "mounts": {
+    "/": { "device": "{{ root_disk }}2" },
+    "/boot/efi": { "device": "{{ root_disk }}1" },
+    "/swap": { "device": "{{ root_disk }}3" },
+    "/SCRATCH": { "device": "{{ scratch_disk }}p1" }
+  }
+}
+
