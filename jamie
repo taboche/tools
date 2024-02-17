@@ -69,3 +69,29 @@ out = open(os.environ['MAAS_RESOURCES_FILE'], 'w')
 out.write(json.dumps(cfg, sort_keys=True, indent=2))
 out.close()
 
+
+
+
+cfg['layout'][smaller_disk['id']] = {
+    'type': 'disk',
+    'ptable': 'gpt',
+    'boot': 'true',
+    'partitions': [
+        {
+            'name': smaller_disk['id'] + suffix + '1',
+            'size': '1G',
+            'fs': 'vfat',
+            'bootable': 'True'
+        },
+        {
+            'name': smaller_disk['id'] + suffix + '2',
+            'size': '100G',
+            'fs': 'ext4'
+        },
+        {
+            'name': smaller_disk['id'] + suffix + '3',
+            'size': '256G',
+            'fs': 'swap'
+        }
+    ]
+}
