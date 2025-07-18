@@ -1,0 +1,23 @@
+--- lvm.py.orig  2025-07-18 09:00:00.000000000 -0500
++++ lvm.py       2025-07-18 09:18:00.000000000 -0500
+
+@@ class LVMVolumeDriver(driver.VolumeDriver):
+-    def initialize_connection(self, volume, connector):
+-        return self.target_driver.initialize_connection(volume, connector)
++    def initialize_connection(self, volume, connector):
++        local_machine = socket.gethostname()
++        connector_hostname = connector.get('host') or connector.get('hostname')
++        if connector_hostname:
++            short_local = local_machine.split('.')[0]
++            short_connector = connector_hostname.split('.')[0]
++            if short_local == short_connector:
++                device_path = self.local_path(volume)
++                LOG.info("Bypassing iSCSI stack for local attach of volume %s: %s",
++                         volume['id'], device_path)
++                return {
++                    'driver_volume_type': 'local',
++                    'data': {
++                        'device_path': device_path,
++                    }
++                }
++        return self.target_driver.initialize_connection(volume, connector)
