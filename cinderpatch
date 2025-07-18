@@ -21,3 +21,30 @@
 +                    }
 +                }
 +        return self.target_driver.initialize_connection(volume, connector)
+
+
+
+
+def initialize_connection(self, volume, connector):
+    """
+    Return a local device path if the connector is from the local host.
+    Otherwise, fall back to normal target driver behavior.
+    """
+    # Check if the connector is from the local host
+    local_machine = socket.gethostname()
+    connector_hostname = connector.get('host') or connector.get('hostname')
+    if connector_hostname:
+        short_local = local_machine.split('.')[0]
+        short_connector = connector_hostname.split('.')[0]
+        if short_local == short_connector:
+            device_path = self.local_path(volume)
+            LOG.info("Bypassing iSCSI stack for local attach of volume %s: %s",
+                     volume['id'], device_path)
+            return {
+                'driver_volume_type': 'local',
+                'data': {
+                    'device_path': device_path,
+                }
+            }
+    # Fallback to existing behavior
+    return self.target_driver.initialize_connection(volume, connector)
